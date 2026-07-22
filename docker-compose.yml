@@ -4,7 +4,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
       - ./public/:/var/www/public/
       - image:/var/www/upload/image/
     depends_on:
@@ -13,7 +13,7 @@ services:
   php:
     container_name: php
     build:
-      context: .
+      context: ./docker/web
       target: php
     volumes:
       - ./public/:/var/www/public/
@@ -37,4 +37,3 @@ services:
 volumes:
   mysql:
   image:
-

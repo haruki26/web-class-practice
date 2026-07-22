@@ -4,5 +4,4 @@ RUN docker-php-ext-install pdo_mysql
 
 RUN install -o www-data -g www-data -d /var/www/upload/image/
 
-COPY ./web/php/php.ini "$PHP_INI_DIR/php.ini"
-
+COPY ./php/php.ini "$PHP_INI_DIR/php.ini"
