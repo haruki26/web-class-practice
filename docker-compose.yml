@@ -28,11 +28,8 @@ services:
       TZ: Asia/Tokyo
     volumes:
       - mysql:/var/lib/mysql
-    command: >
-      mysqld
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
-      --max_allowed_packet=4MB
+      - ./docker/mysql/conf.d/:/etc/mysql/conf.d/
+      - ./docker/mysql/init/:/docker-entrypoint-initdb.d/
 
 volumes:
   mysql:
