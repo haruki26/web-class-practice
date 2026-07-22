@@ -26,7 +26,7 @@ docker compose up -d
 MySQL コンテナに接続。
 
 ```bash
-docker compose exec mysql mysql example_db;
+docker compose exec mysql mysql example_db
 ```
 
 SQL を発行。
