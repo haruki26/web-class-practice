@@ -7,5 +7,7 @@ CREATE TABLE `bbs_entries` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `body` TEXT NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `image_filename` TEXT DEFAULT NULL
+    `image_filename` TEXT DEFAULT NULL,
+    `reply_to` INT UNSIGNED DEFAULT NULL,
+    FOREIGN KEY (`reply_to`) REFERENCES `bbs_entries`(`id`) ON DELETE SET NULL
 );

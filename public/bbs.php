@@ -1,6 +1,8 @@
 <?php
 $dbh = new PDO("mysql:host=mysql;dbname=example_db", "root", "");
 
+$reply_to = isset($_GET["reply_to"]) ? intval($_GET["reply_to"]) : null;
+
 if (isset($_POST["body"])) {
   // POSTで送られてくるフォームパラメータ body がある場合
 
@@ -28,11 +30,12 @@ if (isset($_POST["body"])) {
 
   // insertする
   $insert_sth = $dbh->prepare(
-    "INSERT INTO bbs_entries (body, image_filename) VALUES (:body, :image_filename)",
+    "INSERT INTO bbs_entries (body, image_filename, reply_to) VALUES (:body, :image_filename, :reply_to)",
   );
   $insert_sth->execute([
     ":body" => $_POST["body"],
     ":image_filename" => $image_filename,
+    ":reply_to" => $reply_to,
   ]);
 
   // 処理が終わったらリダイレクトする
@@ -58,7 +61,13 @@ $select_sth->execute();
 <body>
 
   <!-- フォームのPOST先はこのファイル自身にする -->
-  <form method="POST" action="./bbs.php" enctype="multipart/form-data">
+  <form
+    method="POST"
+    action="./bbs.php<?= $reply_to ? "?reply_to=" . $reply_to : "" ?>"
+    enctype="multipart/form-data">
+    <?php if ($reply_to): ?>
+      <span>返信中: <?= $reply_to ?></span>
+    <?php endif; ?>
     <textarea name="body" required></textarea>
     <div>
       <input type="file" accept="image/*" name="image" id="imageInput">
@@ -70,13 +79,20 @@ $select_sth->execute();
 
   <div id="entries">
     <?php foreach ($select_sth as $entry): ?>
-      <dl>
+      <dl id="entry-<?= $entry["id"] ?>">
         <dt>ID</dt>
-        <dd><?= $entry["id"] ?></dd>
+        <dd><a href="?reply_to=<?= $entry["id"] ?>"><?= $entry["id"] ?></a></dd>
         <dt>日時</dt>
         <dd><?= $entry["created_at"] ?></dd>
         <dt>内容</dt>
         <dd>
+          <?php if (isset($entry["reply_to"])): ?>
+            <a
+              href="#entry-<?= $entry["reply_to"] ?>"
+            >
+              &gt;&gt; <?= $entry["reply_to"] ?>
+            </a>
+          <?php endif; ?>
           <?= nl2br(htmlspecialchars($entry["body"]))
       // 必ず htmlspecialchars() すること
       ?>
