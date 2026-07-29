@@ -51,88 +51,89 @@ $select_sth->execute();
 
 <head>
   <title>画像投稿できる掲示板</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylesheet" href="./style.css">
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.0/dist/browser-image-compression.js"></script>
 </head>
+<body>
 
-<!-- フォームのPOST先はこのファイル自身にする -->
-<form method="POST" action="./bbs.php" enctype="multipart/form-data">
-  <textarea name="body" required></textarea>
-  <div style="margin: 1em 0;">
-    <input type="file" accept="image/*" name="image" id="imageInput">
+  <!-- フォームのPOST先はこのファイル自身にする -->
+  <form method="POST" action="./bbs.php" enctype="multipart/form-data">
+    <textarea name="body" required></textarea>
+    <div>
+      <input type="file" accept="image/*" name="image" id="imageInput">
+    </div>
+    <button type="submit">送信</button>
+  </form>
+
+  <hr>
+
+  <div id="entries">
+    <?php foreach ($select_sth as $entry): ?>
+      <dl>
+        <dt>ID</dt>
+        <dd><?= $entry["id"] ?></dd>
+        <dt>日時</dt>
+        <dd><?= $entry["created_at"] ?></dd>
+        <dt>内容</dt>
+        <dd>
+          <?= nl2br(htmlspecialchars($entry["body"]))
+      // 必ず htmlspecialchars() すること
+      ?>
+          <?php if (
+            !empty($entry["image_filename"])
+          ):// 画像がある場合は img 要素を使って表示
+             ?>
+          <div>
+            <img src="/image/<?= $entry["image_filename"] ?>">
+          </div>
+          <?php endif; ?>
+        </dd>
+      </dl>
+    <?php endforeach; ?>
   </div>
-  <button type="submit">送信</button>
-</form>
 
-<hr>
+  <script type="text/javascript">
+  const fileInput = document.getElementById("imageInput");
 
-<div id="entries">
-  <?php foreach ($select_sth as $entry): ?>
-    <dl style="margin-bottom: 1em; padding-bottom: 1em; border-bottom: 1px solid #ccc;">
-      <dt>ID</dt>
-      <dd><?= $entry["id"] ?></dd>
-      <dt>日時</dt>
-      <dd><?= $entry["created_at"] ?></dd>
-      <dt>内容</dt>
-      <dd>
-        <?= nl2br(htmlspecialchars($entry["body"]))
-    // 必ず htmlspecialchars() すること
-    ?>
-        <?php if (
-          !empty($entry["image_filename"])
-        ):// 画像がある場合は img 要素を使って表示
-           ?>
-        <div>
-          <img src="/image/<?= $entry[
-            "image_filename"
-          ] ?>" style="max-height: 10em;">
-        </div>
-        <?php endif; ?>
-      </dd>
-    </dl>
-  <?php endforeach; ?>
-</div>
-
-<script type="text/javascript">
-const fileInput = document.getElementById("imageInput");
-
-const validate = (files) => {
-  if (files.length !== 1) {
-    return "単一の画像ファイルを選択してください";
-  } else if (!files[0].type.startsWith("image/")) {
-    return "画像ファイルを選択してください";
-  }
-  return null;
-}
-
-fileInput.addEventListener('change', async (e) => {
-  const input = e.currentTarget;
-  input.disabled = true;
-  const msg = validate(e.target.files)
-
-  if (msg !== null) {
-    alert(msg);
-    e.target.value = '';
+  const validate = (files) => {
+    if (files.length !== 1) {
+      return "単一の画像ファイルを選択してください";
+    } else if (!files[0].type.startsWith("image/")) {
+      return "画像ファイルを選択してください";
+    }
+    return null;
   }
 
-  const originalImage = e.target.files[0];
+  fileInput.addEventListener('change', async (e) => {
+    const input = e.currentTarget;
+    input.disabled = true;
+    const msg = validate(e.target.files)
 
-  if (originalImage.size > 5 * 1000 * 1000) {
-    try {
-      const compressedImage = await imageCompression(originalImage, { maxSizeMb: 5 });
-
-      const resizedImage = new File([compressedImage], e.target.files[0].name, { type: e.target.files[0].type });
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(resizedImage);
-      e.target.files = dataTransfer.files;
-
-      alert("要領が大きいため画像を圧縮しました");
-    } catch {
-      alert("画像の圧縮に失敗しました");
+    if (msg !== null) {
+      alert(msg);
       e.target.value = '';
     }
-  }
 
-  input.disabled = false;
-});
-</script>
+    const originalImage = e.target.files[0];
+
+    if (originalImage.size > 5 * 1000 * 1000) {
+      try {
+        const compressedImage = await imageCompression(originalImage, { maxSizeMb: 5 });
+
+        const resizedImage = new File([compressedImage], e.target.files[0].name, { type: e.target.files[0].type });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(resizedImage);
+        e.target.files = dataTransfer.files;
+
+        alert("要領が大きいため画像を圧縮しました");
+      } catch {
+        alert("画像の圧縮に失敗しました");
+        e.target.value = '';
+      }
+    }
+
+    input.disabled = false;
+  });
+  </script>
+</body>
