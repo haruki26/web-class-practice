@@ -72,7 +72,7 @@ $select_sth->execute();
     <div>
       <input type="file" accept="image/*" name="image" id="imageInput">
     </div>
-    <button type="submit">送信</button>
+    <button type="submit" id="submitButton">送信</button>
   </form>
 
   <hr>
@@ -111,6 +111,7 @@ $select_sth->execute();
 
   <script type="text/javascript">
   const fileInput = document.getElementById("imageInput");
+  const submitButton = document.getElementById("submitButton");
 
   const validate = (files) => {
     if (files.length !== 1) {
@@ -124,6 +125,8 @@ $select_sth->execute();
   fileInput.addEventListener('change', async (e) => {
     const input = e.currentTarget;
     input.disabled = true;
+    submitButton.disabled = true;
+
     const msg = validate(e.target.files)
 
     if (msg !== null) {
@@ -150,6 +153,7 @@ $select_sth->execute();
     }
 
     input.disabled = false;
+    submitButton.disabled = false;
   });
   </script>
 </body>
