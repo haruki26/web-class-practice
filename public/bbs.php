@@ -106,6 +106,8 @@ const validate = (files) => {
 }
 
 fileInput.addEventListener('change', async (e) => {
+  const input = e.currentTarget;
+  input.disabled = true;
   const msg = validate(e.target.files)
 
   if (msg !== null) {
@@ -125,10 +127,12 @@ fileInput.addEventListener('change', async (e) => {
       e.target.files = dataTransfer.files;
 
       alert("要領が大きいため画像を圧縮しました");
-    } catch (e) {
+    } catch {
       alert("画像の圧縮に失敗しました");
       e.target.value = '';
     }
   }
+
+  input.disabled = false;
 });
 </script>
