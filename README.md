@@ -15,9 +15,11 @@ git clone https://github.com/haruki26/web-class-practice.git
 以下コマンドでアプリケーションを起動する。
 
 ```bash
-docker compose up -d
+docker compose up
 ```
+
+- テーブルの作成まで行います
 
 ### 2. アクセス
 
-ブラウザから `http://[your-ip]/bbsimagetest.php` にアクセスして確認。
+ブラウザから `http://[your-ip]/bbs.php` にアクセスして確認。

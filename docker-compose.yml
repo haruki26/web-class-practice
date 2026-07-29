@@ -9,6 +9,7 @@ services:
       - image:/var/www/upload/image/
     depends_on:
       - php
+      - mysql
 
   php:
     container_name: php
