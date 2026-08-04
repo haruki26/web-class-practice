@@ -2,6 +2,16 @@
 $dbh = new PDO("mysql:host=mysql;dbname=example_db", "root", "");
 
 $reply_to = isset($_GET["reply_to"]) ? intval($_GET["reply_to"]) : null;
+if (isset($reply_to)) {
+  $check_sth = $dbh->prepare("SELECT * FROM bbs_entries WHERE id = :id");
+  $check_sth->execute([":id" => $reply_to]);
+
+  if ($check_sth->fetch() === false) {
+    header("HTTP/1.1 302 Found");
+    header("Location: ./bbs.php");
+    return;
+  }
+}
 
 if (isset($_POST["body"])) {
   // POSTで送られてくるフォームパラメータ body がある場合
